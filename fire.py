@@ -1,5 +1,6 @@
-
+import PySimpleGUI as sg
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 # Funzione che calcola la crescita del capitale tenendo conto di rendita, inflazione e prelievi
 def calcola_crescita(capitale_iniziale, tasso_rendita, tasso_inflazione, prelievo_annuo, anni):
@@ -20,23 +21,75 @@ def calcola_crescita(capitale_iniziale, tasso_rendita, tasso_inflazione, preliev
     
     return capitali_nominali, capitali_reali
 
-# Parametri di input
-capitale_iniziale = float(input("Inserisci il capitale iniziale (€): "))
-tasso_rendita = float(input("Inserisci il tasso di rendita annuo (%): ")) / 100
-tasso_inflazione = float(input("Inserisci il tasso di inflazione annuo (%): ")) / 100
-prelievo_annuo = float(input("Inserisci l'importo del prelievo annuale (€): "))
-anni = 100
+# Funzione per disegnare il grafico
+def draw_graph(capitale_nominale, capitale_reale):
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(range(1, len(capitale_nominale) + 1), capitale_nominale, label='Capitale Nominale', color='blue')
+    ax.plot(range(1, len(capitale_reale) + 1), capitale_reale, label='Capitale Reale', color='red', linestyle='--')
+    ax.set_title('Crescita del Capitale in 100 Anni')
+    ax.set_xlabel('Anno')
+    ax.set_ylabel('Capitale (€)')
+    ax.legend()
+    ax.grid(True)
+    plt.tight_layout()
+    return fig
 
-# Calcolo della crescita del capitale
-capitali_nominali, capitali_reali = calcola_crescita(capitale_iniziale, tasso_rendita, tasso_inflazione, prelievo_annuo, anni)
+# Funzione per aggiungere il grafico al canvas
+def draw_figure(canvas, figure):
+    figure_canvas_agg = FigureCanvasTkAgg(figure, canvas)
+    figure_canvas_agg.draw()
+    figure_canvas_agg.get_tk_widget().pack(side='top', fill='both', expand=1)
+    return figure_canvas_agg
 
-# Creazione del grafico
-plt.figure(figsize=(10,6))
-plt.plot(range(1, anni + 1), capitali_nominali, label='Capitale Nominale', color='blue')
-plt.plot(range(1, anni + 1), capitali_reali, label='Capitale Reale', color='red', linestyle='--')
-plt.xlabel('Anno')
-plt.ylabel('Capitale (€)')
-plt.title(f'Crescita del Capitale in 100 Anni con Prelievi\n(inflazione e rendita applicati)')
-plt.legend()
-plt.grid(True)
-plt.show()
+# Layout dell'interfaccia grafica
+layout = [
+    [sg.Text('Simulatore di Crescita del Capitale', font=("Helvetica", 16))],
+    [sg.Text('Capitale Iniziale (€):'), sg.InputText(key='-CAPITALE-', size=(20, 1))],
+    [sg.Text('Tasso di Rendita Annua (%):'), sg.InputText(key='-RENDITA-', size=(20, 1))],
+    [sg.Text('Tasso di Inflazione Annua (%):'), sg.InputText(key='-INFLAZIONE-', size=(20, 1))],
+    [sg.Text('Prelievo Annuale (€):'), sg.InputText(key='-PRELIEVO-', size=(20, 1))],
+    [sg.Button('Calcola'), sg.Button('Esci')],
+    [sg.Column([[sg.Canvas(key='-CANVAS-')]], expand_x=True, expand_y=True, size=(1000, 600), scrollable=True)]
+]
+
+# Creazione della finestra
+window = sg.Window(
+    'Simulatore di Crescita del Capitale', 
+    layout, 
+    resizable=True,  # Permette alla finestra di essere ridimensionabile
+    finalize=True)
+canvas_elem = window['-CANVAS-'].Widget
+
+# Gestione degli eventi
+figure_canvas_agg = None
+while True:
+    event, values = window.read()
+
+    if event == sg.WINDOW_CLOSED or event == 'Esci':
+        break
+
+    if event == 'Calcola':
+        try:
+            # Ottieni i valori inseriti dall'utente
+            capitale_iniziale = float(values['-CAPITALE-'])
+            tasso_rendita = float(values['-RENDITA-']) / 100
+            tasso_inflazione = float(values['-INFLAZIONE-']) / 100
+            prelievo_annuo = float(values['-PRELIEVO-'])
+            anni = 100
+
+            # Calcola la crescita del capitale
+            capitali_nominali, capitali_reali = calcola_crescita(capitale_iniziale, tasso_rendita, tasso_inflazione, prelievo_annuo, anni)
+
+            # Rimuovi il grafico precedente
+            if figure_canvas_agg:
+                figure_canvas_agg.get_tk_widget().forget()
+
+            # Disegna il nuovo grafico
+            fig = draw_graph(capitale_nominale=capitali_nominali, capitale_reale=capitali_reali)
+            figure_canvas_agg = draw_figure(canvas_elem, fig)
+
+        except ValueError:
+            sg.popup_error("Per favore, inserisci valori validi!")
+
+# Chiudi la finestra
+window.close()
