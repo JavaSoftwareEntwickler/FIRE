@@ -27,8 +27,8 @@ Per eseguire questo progetto, avrai bisogno di Python 3 e di alcune librerie est
 Se non hai già il progetto sul tuo computer, puoi clonarlo utilizzando Git:
 
 ```bash
-    git clone https://github.com/tuo-username/simulatore-capitale.git
-    cd simulatore-capitale
+    git clone git@github.com:JavaSoftwareEntwickler/FIRE.git
+    cd FIRE
 ```
 
 ### 2. Crea un ambiente virtuale (opzionale)
