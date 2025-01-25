@@ -16,7 +16,9 @@ Per eseguire questo progetto, avrai bisogno di Python 3 e di alcune librerie est
 
 ### Librerie richieste
 
+- `PySimpleGUI`: Utilizzato per creare l'interfaccia grafica del simulatore.
 - `matplotlib`: Utilizzato per creare il grafico della crescita del capitale.
+- `numpy`: Dipendenza necessaria per `matplotlib` per calcoli efficienti.
 
 ## Come usare il progetto
 
