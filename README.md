@@ -41,18 +41,11 @@ Se non hai già il progetto sul tuo computer, puoi clonarlo utilizzando Git:
 
 Attivare l'ambiente virtuale:
 
-- Su Windows:
+- Su Windows con powershell:
 
 
 ```bash
-    venv\Scripts\activate
-```
-
-- Su macOS/Linux:
-
-
-```bash
-    source venv/bin/activate
+    ./venv\Scripts\activate
 ```
 
 ### 3. Installa le dipendenze
@@ -61,13 +54,22 @@ Una volta creato e attivato l'ambiente virtuale, puoi installare le librerie nec
 
 ```bash
     pip install -r requirements.txt
-
 ```
+Se si incontrano problemi forzare l'installazione con 
+```bash
+    python -m pip install --force-reinstall --extra-index-url https://PySimpleGUI.net/install PySimpleGUI
+```
+e poi per installare il resto
+```bash
+    pip install -r requirements.txt
+```
+
 ### 4. Esegui il programma
 
 Una volta installate le dipendenze, puoi eseguire il programma Python. Esegui il file principale del progetto, ad esempio:
 
 ```bash
+python -m pip install --force-reinstall --extra-index-url https://PySimpleGUI.net/install PySimpleGUI
     python fire.py
 ```
 
